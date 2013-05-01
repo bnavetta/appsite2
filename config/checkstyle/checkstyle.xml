@@ -1,0 +1,157 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+    "-//Puppy Crawl//DTD Check Configuration 1.2//EN"
+    "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
+
+<!--
+	Checkstyle configuration for my (Ben Navetta) personal coding conventions.
+	
+	- Opening braces on the next line (except for anonymous classes)
+	- Tabs instead of spaces
+	- General best practices (most of the checks - why else would checkstyle include them?)
+-->
+
+<module name="Checker">
+	
+	<!-- Don't copy code - use utility classes -->
+	<!--><module name="StrictDuplicateCode"/>--> <!-- Generates an error on license headers -->
+	 
+	<!-- I have a separate gradle plugin checking for headers -->
+
+	<!-- Package Javadoc -->
+	<module name="JavadocPackage"/>
+	
+	<!-- Looks better when printing with cat, etc. -->
+	<module name="NewlineAtEndOfFile"/>
+		
+	<!-- Check properties files -->
+	<module name="Translation"/>
+	
+    <module name="TreeWalker">
+		
+		<!-- Annotations -->
+		<module name="AnnotationUseStyle"/>
+		<module name="MissingDeprecated"/>
+		<module name="MissingOverride"/>
+		<module name="PackageAnnotation"/>
+		<module name="SuppressWarnings"/> <!-- warnings are there for a reason -->
+		
+		<!-- Blocks -->
+		<module name="EmptyBlock"/>
+		<module name="LeftCurly">
+			<property name="option" value="nl"/> <!-- curly braces on the next line are much more readable -->
+		</module>
+		<module name="RightCurly">
+			<property name="option" value="alone"/>
+		</module>
+		<module name="NeedBraces"/> <!-- save me from my own laziness : ) -->
+		<module name="AvoidNestedBlocks">
+			<property name="allowInSwitchCase" value="true"/>
+		</module>
+		
+		<!-- Class Design -->
+		<module name="VisibilityModifier"/> <!-- Yay getters! And setters! -->
+		<module name="InterfaceIsType"/> <!-- static imports pretty much made constant interfaces obsolete -->
+		<module name="HideUtilityClassConstructor"/> <!-- I forget to do this a lot -->
+		<module name="DesignForExtension"/> <!-- Seems like a good idea -->
+		<module name="MutableException"/>
+		<!-- don't do ThrowsCount - a lot of the exceptions will be standard Java ones that aren't necessarily under the same hiearchy (beyond java.lang.Exception) -->
+		<module name="InnerTypeLast"/> <!-- let's see if it makes code more readable -->
+		
+		<!-- Coding -->
+		<module name="ArrayTrailingComma"/>
+		<module name="CovariantEquals"/>
+		<module name="EmptyStatement"/>
+		<module name="EqualsAvoidNull"/> <!-- good idea/habit to get into -->
+		<module name="EqualsHashCode"/>
+		<module name="FinalLocalVariable">
+			<property name="tokens" value="VARIABLE_DEF,PARAMETER_DEF"/> <!-- defaults to just VARIABLE_DEF -->
+		</module>
+		<module name="HiddenField"> <!-- local variable w/ same name as class variable -->
+			<property name="ignoreSetter" value="true"/> <!-- I prefer using the name of the field as the parameter in the setter/ctor -->
+			<property name="ignoreConstructorParameter" value="true"/> <!-- i.e this.foo = foo -->
+		</module>
+		<module name="InnerAssignment"/>
+		<module name="MagicNumber"/>
+		<module name="MissingSwitchDefault"/>
+		<module name="ModifiedControlVariable"/>
+		<module name="RedundantThrows">
+			<property name="allowUnchecked" value="true"/>
+		</module>
+		<module name="SimplifyBooleanExpression"/> <!-- K.I.S.S. -->
+		<module name="SimplifyBooleanReturn"/>
+		<module name="StringLiteralEquality"/>
+		<module name="NoClone"/>
+		<module name="NoFinalizer"/>
+		<module name="IllegalCatch"/> <!-- don't be lazy - we have multi-catch now -->
+		<module name="IllegalThrows"/> <!-- the IDE can generate all the throws you want, so let it -->
+		<module name="PackageDeclaration"/>
+		<module name="ReturnCount"/>
+		<module name="IllegalType"/>
+		<module name="DeclarationOrder"/> <!-- I agree completely -->
+		<module name="ParameterAssignment"/>
+		<module name="ExplicitInitialization"/>
+		<module name="DefaultComesLast"/>
+		<module name="MissingCtor"/>
+		<module name="FallThrough"/>
+		<module name="MultipleStringLiterals"/>
+		<module name="MultipleVariableDeclarations"/>
+		<module name="UnnecessaryParentheses"/>
+		<module name="OneStatementPerLine"/>
+		
+		<!-- Imports -->
+		<module name="AvoidStarImport">
+			<property name="allowStaticMemberImports" value="true"/>
+		</module>
+		<module name="IllegalImport"/>
+		<module name="RedundantImport"/>
+		<module name="UnusedImports"/>
+		<module name="ImportOrder">
+			<property name="groups" value="/^javax?\./,org,net,com"/>
+			<property name="ordered" value="true"/>
+			<property name="separated" value="true"/>
+			<property name="option" value="above"/>
+		</module>
+		
+		<!-- Javadoc -->
+		<module name="JavadocType"/>
+		<module name="JavadocMethod"/>
+		<module name="JavadocVariable"/>
+		<module name="JavadocStyle"/>
+		
+		<!-- Metrics -->
+		<module name="BooleanExpressionComplexity"/>
+		<module name="ClassDataAbstractionCoupling"/>
+		<module name="ClassFanOutComplexity"/>
+		<module name="CyclomaticComplexity"/>
+		<module name="NPathComplexity"/>
+		<module name="JavaNCSS"/>
+		
+		<!-- Miscellaneous -->
+		<module name="UncommentedMain"/>
+		<module name="UpperEll"/>
+		<module name="ArrayTypeStyle"/> <!-- I didn't know that the C-style array type was allowed in C either : ) -->
+		<module name="TrailingComment"/> <!-- likewise -->
+		<module name="OuterTypeFilename"/> <!-- Eclipse ought to catch this too -->
+		
+		<!-- Modifiers -->
+		<module name="ModifierOrder"/>
+		<module name="RedundantModifier"/> <!-- might exclude interfaces at some point -->
+		
+		<!-- Whitespace -->
+		<module name="GenericWhitespace"/>
+		<module name="EmptyForInitializerPad"/>
+		<module name="EmptyForIteratorPad"/>
+		<module name="MethodParamPad"/>
+		<module name="NoWhitespaceAfter"/>
+		<module name="NoWhitespaceBefore">
+			<property name="allowLineBreaks" value="true"/> <!-- for fluent APIs -->
+		</module>
+		<module name="OperatorWrap"/> <!-- let's see what this one does -->
+		<module name="ParenPad"/> <!-- Maven doesn't follow this one -->
+		<module name="TypecastParenPad"/>
+		<!-- I need to see if there is a FileTabCharacter equivalent for banning initial spaces -->
+		
+	</module>
+
+</module>
