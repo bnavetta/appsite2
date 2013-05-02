@@ -136,7 +136,8 @@
 		
 		<!-- Modifiers -->
 		<module name="ModifierOrder"/>
-		<module name="RedundantModifier"/> <!-- might exclude interfaces at some point -->
+		<!-- Don't do RedundantModifer because I find redundant modifiers helpful in some places (i.e. interface methods) -->
+		<!--<module name="RedundantModifier"/>-->
 		
 		<!-- Whitespace -->
 		<module name="GenericWhitespace"/>
