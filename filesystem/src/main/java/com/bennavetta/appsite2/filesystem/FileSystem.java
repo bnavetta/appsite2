@@ -55,4 +55,13 @@ public interface FileSystem
 	 * @return a {@code File} at the resolved path, or {@code null} if the file at the resolved path does not exist.
 	 */
 	public File relativeTo(File base, String path);
+	
+	/**
+	 * Delete a file or directory.
+	 * @param file the file or directory to delete
+	 * @param recurse if {@code true} and the file is a directory, then all children of this file will
+	 * also be deleted
+	 * @throws FileSystemException if there is a problem deleting the file(s)
+	 */
+	public void delete(File file, boolean recurse) throws FileSystemException; 
 }
