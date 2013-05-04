@@ -17,6 +17,10 @@ package com.bennavetta.appsite2.filesystem;
 
 import java.util.Collection;
 
+import com.bennavetta.appsite2.filesystem.util.FileInfo;
+import com.google.appengine.api.blobstore.BlobKey;
+import com.google.common.net.MediaType;
+
 /**
  * The core abstraction of the file system API, a {@code FileSystem} provides support for most file operations. This includes creating
  * and deleting files, as well as read operations. This file system API has no concept of a working directory, as multiple requests may
@@ -64,4 +68,26 @@ public interface FileSystem
 	 * @throws FileSystemException if there is a problem deleting the file(s)
 	 */
 	public void delete(File file, boolean recurse) throws FileSystemException;
+	
+	/**
+	 * Create a new file. None of the parameters to this method can be {@code null} because all
+	 * are necessary fields for {@link File} objects, and the file system will not work properly
+	 * without them. The file's parent will be determined from its path. This method should not
+	 * be used to create directories, which are created as needed.
+	 * @param path the absolute path to the file. See {@link File#getPath()}
+	 * @param mimeType the MIME type of the file.
+	 * @param blobKey the identifier of the blob containing the file's content.
+	 * @param md5 the MD5 hash of the file (provided here so it can be generated more efficiently by callers).
+	 * @throws FileSystemException if there is a problem creating the file.
+	 */
+	public void create(String path, MediaType mimeType, BlobKey blobKey, byte[] md5) throws FileSystemException;
+	
+	/**
+	 * Create a new file using the given {@link FileInfo}. All fields of the {@code FileInfo} object
+	 * must be set.
+	 * @param info the information to use creating the file.
+	 * @throws FileSystemException if there is a problem creating the file.
+	 * @see #create(String, MediaType, BlobKey, byte[])
+	 */
+	public void create(FileInfo info) throws FileSystemException;
 }
