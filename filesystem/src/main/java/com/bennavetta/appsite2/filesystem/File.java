@@ -15,6 +15,8 @@
  */
 package com.bennavetta.appsite2.filesystem;
 
+import com.google.common.net.MediaType;
+
 /**
  * A {@code File} object represents an existing file on the virtual file system. The {@link FileSystem} associated with this file must
  * be used for all read/write operations. The forward slash ('/') character is the only valid path separator.
@@ -54,4 +56,19 @@ public interface File
 	 * @return {@code true} if this file is a directory, {@code false} otherwise
 	 */
 	public boolean isDirectory();
+	
+	/**
+	 * Get the type of the content stored in this file. The content type of a file is retained when
+	 * uploaded so that the file can be served later on.
+	 * @return the mime type (never {@code null})
+	 */
+	public MediaType getMimeType();
+	
+	/**
+	 * Get the MD5 hash of this file's content. The hash is stored upon file creation, so there is no
+	 * penalty for repeatedly invoking this method. The byte array should not be modified, but if it
+	 * is, it should not affect the file's actual hash.
+	 * @return a byte array containing the hash of the file.
+	 */
+	public byte[] getMD5Hash();
 }
