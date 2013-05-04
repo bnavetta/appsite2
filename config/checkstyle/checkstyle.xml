@@ -6,7 +6,7 @@
 <!--
 	Checkstyle configuration for my (Ben Navetta) personal coding conventions.
 	
-	- Opening braces on the next line (except for anonymous classes)
+	- Opening braces on the next line (except for anonymous classes and synchronized blocks - anything closure-like)
 	- Tabs instead of spaces
 	- General best practices (most of the checks - why else would checkstyle include them?)
 -->
@@ -39,6 +39,8 @@
 		<!-- Blocks -->
 		<module name="EmptyBlock"/>
 		<module name="LeftCurly">
+			<!-- Everything but LITERAL_SYNCHRONIZED -->
+			<property name="tokens" value="CLASS_DEF,CTOR_DEF,INTERFACE_DEF,LITERAL_CATCH,LITERAL_DO,LITERAL_ELSE,LITERAL_FINALLY,LITERAL_FOR,LITERAL_IF,LITERAL_SWITCH,LITERAL_TRY,LITERAL_WHILE,METHOD_DEF"/>
 			<property name="option" value="nl"/> <!-- curly braces on the next line are much more readable -->
 		</module>
 		<module name="RightCurly">
@@ -107,10 +109,10 @@
 		<module name="RedundantImport"/>
 		<module name="UnusedImports"/>
 		<module name="ImportOrder">
-			<property name="groups" value="/^javax?\./,org,net,com"/>
+			<property name="groups" value="java,javax,org,net,com"/>
 			<property name="ordered" value="true"/>
 			<property name="separated" value="true"/>
-			<property name="option" value="above"/>
+			<property name="option" value="top"/>
 		</module>
 		
 		<!-- Javadoc -->
