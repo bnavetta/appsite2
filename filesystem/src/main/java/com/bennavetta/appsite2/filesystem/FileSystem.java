@@ -63,5 +63,5 @@ public interface FileSystem
 	 * also be deleted
 	 * @throws FileSystemException if there is a problem deleting the file(s)
 	 */
-	public void delete(File file, boolean recurse) throws FileSystemException; 
+	public void delete(File file, boolean recurse) throws FileSystemException;
 }
