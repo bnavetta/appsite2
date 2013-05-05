@@ -1,6 +1,6 @@
 language: java
 # make sure that the wrapper downloads
 before_install: ./gradlew --version
-install: ./gradlew -q assemble
-script: ./gradlew -q check
+install: ./gradlew assemble
+script: ./gradlew check
 
