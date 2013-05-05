@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 /**
- * Contains utility classes for using the file system.
+ * Contains private implementation classes for the file system.
  */
-package com.bennavetta.appsite2.filesystem.util;
+package com.bennavetta.appsite2.filesystem.impl;
