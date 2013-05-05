@@ -23,13 +23,13 @@
 
 	<persistence-unit name="filesystem">
 		<provider>org.datanucleus.api.jpa.PersistenceProviderImpl</provider>
+		<class>com.bennavetta.appsite2.filesystem.impl.FileImpl</class>
 		<properties>
 			<property name="datanucleus.NontransactionalRead" value="true"/>
 			<property name="datanucleus.NontransactionalWrite" value="true"/>
 			<property name="datanucleus.ConnectionURL" value="appengine"/>
 			<property name="datanucleus.singletonEMFForName" value="true"/>
 		</properties>
-
 	</persistence-unit>
 
 </persistence>
