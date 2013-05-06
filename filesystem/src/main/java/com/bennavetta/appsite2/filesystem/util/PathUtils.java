@@ -17,6 +17,9 @@ package com.bennavetta.appsite2.filesystem.util;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.regex.Pattern;
+
+import com.google.appengine.repackaged.com.google.common.base.Joiner;
 import com.google.appengine.repackaged.com.google.common.base.Splitter;
 import com.google.appengine.repackaged.com.google.common.collect.Iterables;
 
@@ -59,9 +62,18 @@ public class PathUtils
 	 * @param path the path string (cannot be {@code null})
 	 * @return the last component in the path
 	 */
-	public static final String lastPathComponent(final String path)
+	public static final String lastPathComponent(String path)
 	{
-		return Iterables.getLast(Splitter.on(SEPARATOR).split(checkNotNull(path, NULL_PATH_MSG)));
+		if(SEPARATOR.equals(path))
+		{
+			return path;
+		}
+		path = checkNotNull(path, NULL_PATH_MSG).replaceAll(Pattern.quote(SEPARATOR) + "+", SEPARATOR);
+		if(path.endsWith(SEPARATOR))
+		{
+			path = path.substring(0, path.length()-1);
+		}
+		return Iterables.getLast(Splitter.on(SEPARATOR).split(path));
 	}
 	
 	/**
