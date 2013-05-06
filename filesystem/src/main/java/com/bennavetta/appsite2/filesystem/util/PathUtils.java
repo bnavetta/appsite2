@@ -17,9 +17,6 @@ package com.bennavetta.appsite2.filesystem.util;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.util.List;
-
-import com.google.appengine.repackaged.com.google.common.base.Joiner;
 import com.google.appengine.repackaged.com.google.common.base.Splitter;
 import com.google.appengine.repackaged.com.google.common.collect.Iterables;
 
@@ -74,7 +71,20 @@ public class PathUtils
 	 */
 	public static final String withoutLastComponent(final String path)
 	{
-		final List<String> components = Splitter.on(SEPARATOR).splitToList(checkNotNull(path, "Path cannot be null"));
-		return Joiner.on(SEPARATOR).join(components.subList(0, components.size()));
+		checkNotNull(path, NULL_PATH_MSG);
+		if(path.equals(SEPARATOR))
+		{
+			return path;
+		}
+		int end = 0;
+		if(path.endsWith(SEPARATOR))
+		{
+			end = path.lastIndexOf(SEPARATOR, path.length()-2);
+		}
+		else
+		{
+			end = path.lastIndexOf(SEPARATOR);
+		}
+		return path.substring(0, end);
 	}
 }
