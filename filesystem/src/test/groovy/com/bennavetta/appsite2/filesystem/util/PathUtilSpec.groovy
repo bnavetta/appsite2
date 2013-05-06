@@ -76,4 +76,33 @@ class PathUtilSpec extends Specification
 		then:
 			path == '/foo/bar'
 	}
+	
+	def "withoutLastPathComponent handles root"()
+	{
+		given:
+			def path = "/"
+		when:
+			path = PathUtils.withoutLastComponent(path)
+		then:
+			path == "/"
+	}
+	
+	def "lastPathComponent rejects null"()
+	{
+		when:
+			PathUtils.lastPathComponent(null)
+		then:
+			def e = thrown(NullPointerException)
+			e.message == "Path must not be null"
+	}
+	
+	// use the examples from [NSString lastPathComponent] (Cocoa API)
+	def "lastPathComponent handles NSString examples"()
+	{
+		expect:
+			PathUtils.lastPathComponent(input) == output
+		where:
+			input << ['/tmp/scratch.tiff', '/tmp/scratch', '/tmp/', 'scratch///', "/"]
+			output << ['scratch.tiff', 'scratch', 'tmp', 'scratch', "/"]
+	}
 }

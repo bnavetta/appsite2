@@ -76,6 +76,14 @@ subprojects {
 	 }
 	 
 	 javadoc.excludes << "**/impl/**"
+	 
+	 jacoco {
+		 excludes = ["**/Q*"] // exclude QueryDSL-generated classes
+	 }
+	 
+	 task license {
+		 dependsOn licenseFormatMain, licenseFormatTest
+	 }
 }
 
 task wrapper(type: Wrapper) {

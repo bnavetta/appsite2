@@ -60,4 +60,17 @@ class FileInfoSerialization extends Specification
 			read.mimeType == null
 			read.path == null
 	}
+	
+	def "can create FileInfo"()
+	{
+		given:
+			def info
+		when:
+			info = new FileInfo("/foo/bar", MediaType.ZIP, new BlobKey("1234"), new byte[0])
+		then:
+			info.path == '/foo/bar'
+			info.mimeType == MediaType.ZIP
+			info.blobKey.keyString == '1234'
+			info.md5.size() == 0
+	}
 }
