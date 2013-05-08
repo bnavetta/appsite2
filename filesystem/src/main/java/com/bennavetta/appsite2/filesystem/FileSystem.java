@@ -15,10 +15,9 @@
  */
 package com.bennavetta.appsite2.filesystem;
 
-import java.util.Collection;
-
 import com.bennavetta.appsite2.filesystem.util.FileInfo;
 import com.google.appengine.api.blobstore.BlobKey;
+import com.google.common.collect.ImmutableList;
 import com.google.common.net.MediaType;
 
 /**
@@ -41,7 +40,7 @@ public interface FileSystem
 	 * @return a collection of {@code File}s located under the given directory. Never {@code null}.
 	 * @see File#isDirectory()
 	 */
-	public Collection<File> listFiles(File directory);
+	public ImmutableList<? extends File> listFiles(File directory);
 	
 	/**
 	 * Return the file located at the given absolute path.

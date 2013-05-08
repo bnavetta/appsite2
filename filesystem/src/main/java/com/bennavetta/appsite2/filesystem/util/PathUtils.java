@@ -19,7 +19,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.regex.Pattern;
 
-import com.google.appengine.repackaged.com.google.common.base.Joiner;
 import com.google.appengine.repackaged.com.google.common.base.Splitter;
 import com.google.appengine.repackaged.com.google.common.collect.Iterables;
 
@@ -62,18 +61,18 @@ public class PathUtils
 	 * @param path the path string (cannot be {@code null})
 	 * @return the last component in the path
 	 */
-	public static final String lastPathComponent(String path)
+	public static final String lastPathComponent(final String path)
 	{
-		if(SEPARATOR.equals(path))
+		String outPath = checkNotNull(path, NULL_PATH_MSG).replaceAll(Pattern.quote(SEPARATOR) + "+", SEPARATOR);
+		if(SEPARATOR.equals(outPath))
 		{
-			return path;
+			return outPath;
 		}
-		path = checkNotNull(path, NULL_PATH_MSG).replaceAll(Pattern.quote(SEPARATOR) + "+", SEPARATOR);
-		if(path.endsWith(SEPARATOR))
+		if(outPath.endsWith(SEPARATOR))
 		{
-			path = path.substring(0, path.length()-1);
+			outPath = outPath.substring(0, outPath.length()-1);
 		}
-		return Iterables.getLast(Splitter.on(SEPARATOR).split(path));
+		return Iterables.getLast(Splitter.on(SEPARATOR).split(outPath));
 	}
 	
 	/**

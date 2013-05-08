@@ -7,6 +7,7 @@ import org.gradle.api.tasks.compile.JavaCompile
 class JpaPlugin implements Plugin<Project>
 {
 	public static final String DATANUCLEUS_VERSION = '3.2.1'
+	public static final String DATANUCLEUS_CORE_VERSION = '3.2.2'
 	public static final String QUERYDSL_VERSION = '3.1.1'
 	
 	public void apply(Project project)
@@ -21,10 +22,11 @@ class JpaPlugin implements Plugin<Project>
 			}
 		}
 		project.dependencies {
-			compile "org.datanucleus:datanucleus-core:$DATANUCLEUS_VERSION"
+			compile "org.datanucleus:datanucleus-core:$DATANUCLEUS_CORE_VERSION"
 			compile "org.datanucleus:datanucleus-api-jpa:$DATANUCLEUS_VERSION"
 			compile "org.apache.geronimo.specs:geronimo-jpa_2.0_spec:1.1"
-			jpaEnhance "javax.jdo:jdo-api:3.0.1"
+			compile "javax.jdo:jdo-api:3.0.1"
+			compile "com.google.appengine.orm:datanucleus-appengine:3.0.0-SNAPSHOT"
 			
 			queryDsl "com.mysema.querydsl:querydsl-apt:$QUERYDSL_VERSION"
 			compile "com.mysema.querydsl:querydsl-jpa:$QUERYDSL_VERSION"

@@ -39,6 +39,9 @@ subprojects {
 	
 	repositories {
 		mavenCentral()
+		flatDir {
+			dirs rootProject.file('lib')
+		}
 	}
 	
 	configurations {

@@ -15,14 +15,20 @@
  */
 package com.bennavetta.appsite2.filesystem.impl;
 
-import java.util.Collection;
+import static com.bennavetta.appsite2.filesystem.impl.QFileImpl.fileImpl;
+
+import java.net.URI;
+
+import javax.persistence.EntityManager;
 
 import com.bennavetta.appsite2.filesystem.File;
 import com.bennavetta.appsite2.filesystem.FileSystem;
 import com.bennavetta.appsite2.filesystem.FileSystemException;
 import com.bennavetta.appsite2.filesystem.util.FileInfo;
 import com.google.appengine.api.blobstore.BlobKey;
+import com.google.common.collect.ImmutableList;
 import com.google.common.net.MediaType;
+import com.mysema.query.jpa.impl.JPAQuery;
 
 /**
  * JPA- and BlobStore-based implementation of the file system API.
@@ -61,9 +67,24 @@ public class FileSystemImpl implements FileSystem
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final Collection<File> listFiles(final File directory)
+	public final ImmutableList<? extends File> listFiles(final File directory)
 	{
-		return null;
+		EntityManager em = null;
+		try
+		{
+			em = FileSystemEMF.get().createEntityManager();
+			final JPAQuery query = new JPAQuery(em);
+			return ImmutableList.copyOf(query.from(fileImpl)
+				.where(fileImpl.parent.eq(directory))
+				.list(fileImpl));
+		}
+		finally
+		{
+			if(em != null)
+			{
+				em.close();
+			}
+		}
 	}
 
 	/**
@@ -72,8 +93,22 @@ public class FileSystemImpl implements FileSystem
 	@Override
 	public final File fileAt(final String path)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		EntityManager em = null;
+		try
+		{
+			em = FileSystemEMF.get().createEntityManager();
+			final JPAQuery query = new JPAQuery(em);
+			return query.from(fileImpl)
+				.where(fileImpl.path.eq(path))
+				.uniqueResult(fileImpl);
+		}
+		finally
+		{
+			if(em != null)
+			{
+				em.close();
+			}
+		}
 	}
 
 	/**
@@ -82,8 +117,8 @@ public class FileSystemImpl implements FileSystem
 	@Override
 	public final File relativeTo(final File base, final String path)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		final String realPath = URI.create(base.getPath()).resolve(path).getPath();
+		return fileAt(realPath);
 	}
 
 	/**
