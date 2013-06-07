@@ -16,30 +16,38 @@
 package com.bennavetta.appsite2.filesystem.impl;
 
 import static com.bennavetta.appsite2.filesystem.util.PathUtils.lastPathComponent;
+import static com.google.common.base.Preconditions.checkNotNull;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.PostLoad;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
-import javax.persistence.Transient;
+import java.util.Arrays;
 
 import com.bennavetta.appsite2.filesystem.File;
 import com.bennavetta.appsite2.filesystem.FileSystem;
 import com.google.appengine.api.blobstore.BlobKey;
-import com.google.common.base.Strings;
 import com.google.common.net.MediaType;
+import com.googlecode.objectify.Ref;
+import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Index;
+import com.googlecode.objectify.annotation.Load;
+import com.googlecode.objectify.condition.IfNotNull;
 
 /**
- * JPA-based implementation of the {@link File} interface.
+ * Objectify-based implementation of the {@link File} interface.
  * @author ben
  */
-@Entity
+@Entity(name="file")
 public class FileImpl implements File
 {
+	/**
+	 * The error message for when a path argument is {@code null}. Its value is {@value}.
+	 */
+	private static final String NULL_PATH_MSG = "Path cannot be null";
+	
+	/**
+	 * The error message for when a namespace argument is {@code null}. Its value is {@value}.
+	 */
+	private static final String NULL_NAMESPACE_MSG = "Namespace cannot be null";
+	
 	/**
 	 * The path of the file.
 	 * @see File#getPath()
@@ -50,9 +58,9 @@ public class FileImpl implements File
 	/**
 	 * A pointer to this file's parent.
 	 */
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="PARENT_ID")
-	private File parent;
+	@Load
+	@Index(IfNotNull.class)
+	private Ref<FileImpl> parent;
 	
 	/**
 	 * The name of the file system that this file belongs to.
@@ -72,50 +80,94 @@ public class FileImpl implements File
 	private byte[] md5Hash;
 	
 	/**
-	 * The text representation of this file's MIME type since the {@link MediaType} class is not a valid datastore type.
-	 * The actual MIME type is copied into this field before persisting, and restored upon load.
-	 */
-	private String mimeTypeString;
-	
-	/**
-	 * The actual MIME type of the file. It is transient because DataNucleus cannot persist it.
+	 * The MIME type of the file. Objectify normally cannot persist it, but {@link FileSystemImpl} adds a custom converter. 
 	 * @see File#getMimeType()
 	 */
-	@Transient
 	private MediaType mimeType;
 	
 	/**
-	 * Empty constructor for JPA.
+	 * Empty constructor for Objectify.
 	 */
 	public FileImpl() {}
 	
 	/**
-	 * Create a {@link MediaType} from the value of {@link #mimeTypeString}.
-	 * @see MediaType#parse(String)
+	 * Create a new {@code FileImpl} with the minimum information needed for a directory.
+	 * @param path this file's absolute path
+	 * @param parent this file's parent
+	 * @param namespace the namespace of the file system this file is in
 	 */
-	@PostLoad
-	final void restoreMimeType()
+	public FileImpl(final String path, final FileImpl parent, final String namespace)
 	{
-		if(!Strings.isNullOrEmpty(mimeTypeString))
-		{
-			mimeType = MediaType.parse(mimeTypeString);
-		}
+		this.path = checkNotNull(path, NULL_PATH_MSG);
+		// parent will be null for root directory
+		this.parent = parent != null ? Ref.create(parent) : null;
+		this.namespace = checkNotNull(namespace, NULL_NAMESPACE_MSG);
 	}
-	
+
 	/**
-	 * Set {@link #mimeTypeString} to the string representation of {@link #mimeType}.
-	 * @see MediaType#toString()
+	 * Get the namespace of this file - the name of the file system that created it.
+	 * @return the namespace (never null)
 	 */
-	@PreUpdate
-	@PrePersist
-	final void storeMimeType()
+	public final String getNamespace()
 	{
-		if(mimeType != null)
-		{
-			mimeTypeString = mimeType.toString();
-		}
+		return namespace;
 	}
-	
+
+	/**
+	 * Set this file's namespace.
+	 * @param namespace the new namespace (cannot be {@code null})
+	 * @see #getNamespace()
+	 */
+	public final void setNamespace(final String namespace)
+	{
+		this.namespace = checkNotNull(namespace, NULL_NAMESPACE_MSG);
+	}
+
+	/**
+	 * Get the key identifying the blob containing this file's data.
+	 * @return a blob key, or {@code null} for a directory.
+	 */
+	public final BlobKey getBlobKey()
+	{
+		return blobKey;
+	}
+
+	/**
+	 * Set this file's blob key.
+	 * @param blobKey the new blob key. If the blob key is {@code null}, then the file will be changed to a directory.
+	 */
+	public final void setBlobKey(final BlobKey blobKey)
+	{
+		this.blobKey = blobKey;
+	}
+
+	/**
+	 * Set the MD5 hash of this file's content. This should be called whenever the file's blob key is changed (or its associated blob).
+	 * @param mD5Hash the new MD5 hash
+	 */
+	public final void setMD5Hash(final byte[] mD5Hash)
+	{
+		this.md5Hash = Arrays.copyOf(mD5Hash, mD5Hash.length);
+	}
+
+	/**
+	 * Set this file's absolute path.
+	 * @param path the new absolute path (cannot be {@code null})
+	 */
+	public final void setPath(final String path)
+	{
+		this.path = checkNotNull(path, NULL_PATH_MSG);
+	}
+
+	/**
+	 * Set this file's MIME type.
+	 * @param mimeType the new MIME type.
+	 */
+	public final void setMimeType(final MediaType mimeType)
+	{
+		this.mimeType = mimeType;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -150,7 +202,17 @@ public class FileImpl implements File
 	@Override
 	public final File getParent()
 	{
-		return parent;
+		return parent.get();
+	}
+	
+	/**
+	 * Set this file's parent.
+	 * @param parent the new parent
+	 * @see #getParent()
+	 */
+	public final void setParent(final FileImpl parent)
+	{
+		this.parent = Ref.create(parent);
 	}
 
 	/**

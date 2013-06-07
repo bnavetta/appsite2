@@ -35,19 +35,52 @@ public interface FileSystem
 	public String getName();
 	
 	/**
+	 * List the files in a given directory (filenames only). This method can be used when only the names are needed and it would be
+	 * wasteful to load the entire file object.
+	 * @param directory the directory to list
+	 * @return a list of file paths (absolute - can be passed into fileAt)
+	 * @throws FileSystemException if there is an exception retrieving the directory listing
+	 * @see #listFiles(File)
+	 */
+	public ImmutableList<String> list(File directory) throws FileSystemException;
+	
+	/**
 	 * List the files located within a particular directory. This listing is not recursive, and ordering is not guaranteed.
 	 * @param directory the directory to be listed. The directory argument must not be {@code null}, and it must be a directory.
 	 * @return a collection of {@code File}s located under the given directory. Never {@code null}.
+	 * @throws FileSystemException if there is an exception retrieving the directory listing
 	 * @see File#isDirectory()
 	 */
-	public ImmutableList<? extends File> listFiles(File directory);
+	public ImmutableList<? extends File> listFiles(File directory) throws FileSystemException;
 	
 	/**
 	 * Return the file located at the given absolute path.
-	 * @param path the path of the file (cannot be null)
+	 * @param path the path of the file (cannot be {@code null})
 	 * @return a {@code File}, or {@code null} if the file does not exist
+	 * @see #filesAt(Iterable)
+	 * @see #filesAt(String...)
 	 */
 	public File fileAt(String path);
+	
+	/**
+	 * Return the files located at each of the given paths. This method can use batch queries,
+	 * so it should be preferred to calling {@link #fileAt(String)} repeatedly.
+	 * @param paths the paths of the files to load (cannot be {@code null})
+	 * @return a list of all files loaded
+	 * @see #fileAt(String)
+	 * @see #filesAt(String...)
+	 */
+	public ImmutableList<? extends File> filesAt(String... paths);
+	
+	/**
+	 * Return the files located at each of the given paths. This method can use batch queries,
+	 * so it should be preferred to calling {@link #fileAt(String)} repeatedly.
+	 * @param paths the paths of the files to load (cannot be {@code null})
+	 * @return a list of all files loaded
+	 * @see #fileAt(String)
+	 * @see #filesAt(Iterable)
+	 */
+	public ImmutableList<? extends File> filesAt(Iterable<String> paths);
 	
 	/**
 	 * Resolve a relative path to a file against a base. The rules for resolving are the same as those for {@link java.net.URI#resolve(java.net.URI)}.
@@ -77,16 +110,18 @@ public interface FileSystem
 	 * @param mimeType the MIME type of the file.
 	 * @param blobKey the identifier of the blob containing the file's content.
 	 * @param md5 the MD5 hash of the file (provided here so it can be generated more efficiently by callers).
+	 * @return the created file
 	 * @throws FileSystemException if there is a problem creating the file.
 	 */
-	public void create(String path, MediaType mimeType, BlobKey blobKey, byte[] md5) throws FileSystemException;
+	public File create(String path, MediaType mimeType, BlobKey blobKey, byte[] md5) throws FileSystemException;
 	
 	/**
 	 * Create a new file using the given {@link FileInfo}. All fields of the {@code FileInfo} object
 	 * must be set.
 	 * @param info the information to use creating the file.
+	 * @return the created file
 	 * @throws FileSystemException if there is a problem creating the file.
 	 * @see #create(String, MediaType, BlobKey, byte[])
 	 */
-	public void create(FileInfo info) throws FileSystemException;
+	public File create(FileInfo info) throws FileSystemException;
 }

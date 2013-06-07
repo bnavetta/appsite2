@@ -17,6 +17,7 @@ package com.bennavetta.appsite2.filesystem.util;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.net.URI;
 import java.util.regex.Pattern;
 
 import com.google.appengine.repackaged.com.google.common.base.Splitter;
@@ -97,5 +98,15 @@ public class PathUtils
 			end = path.lastIndexOf(SEPARATOR);
 		}
 		return path.substring(0, end);
+	}
+	
+	/**
+	 * Normalize a path using the rules in {@link URI#normalize()}.
+	 * @param path the path to normalize
+	 * @return a normalized path
+	 */
+	public static final String normalize(final String path)
+	{
+		return URI.create(checkNotNull(path, NULL_PATH_MSG)).normalize().getPath();
 	}
 }

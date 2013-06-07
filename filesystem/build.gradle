@@ -1,13 +1,8 @@
-apply plugin: 'jpa'
-
 dependencies {
 	compile "com.google.appengine:appengine-api-1.0-sdk:$appengineVersion"
+	compile "com.googlecode.objectify:objectify:$objectifyVersion"
 	
 	testCompile "com.google.appengine:appengine-testing:$appengineVersion"
 	testCompile "com.google.appengine:appengine-api-stubs:$appengineVersion"
 	testCompile "com.google.appengine:appengine-api-labs:$appengineVersion"
-}
-
-jpa {
-	persistenceUnit = "filesystem"
 }

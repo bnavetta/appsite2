@@ -17,6 +17,13 @@
 	<!--><module name="StrictDuplicateCode"/>--> <!-- Generates an error on license headers -->
 	 
 	<!-- I have a separate gradle plugin checking for headers -->
+	
+	<!-- Suppression Comments -->
+	<module name="SuppressionCommentFilter">
+		<property name="offCommentFormat" value="CHECKSTYLE.OFF\: ([\w\|]+)"/>
+		<property name="onCommentFormat" value="CHECKSTYLE.ON\: ([\w\|]+)"/>
+		<property name="checkFormat" value="$1"/>
+	</module>
 
 	<!-- Package Javadoc -->
 	<module name="JavadocPackage"/>
@@ -28,6 +35,8 @@
 	<module name="Translation"/>
 	
     <module name="TreeWalker">
+    
+    	<module name="FileContentsHolder"/> <!-- For SuppressionCommentFilter -->
 		
 		<!-- Annotations -->
 		<module name="AnnotationUseStyle"/>
@@ -55,20 +64,15 @@
 		<module name="VisibilityModifier"/> <!-- Yay getters! And setters! -->
 		<module name="InterfaceIsType"/> <!-- static imports pretty much made constant interfaces obsolete -->
 		<module name="HideUtilityClassConstructor"/> <!-- I forget to do this a lot -->
-		<module name="DesignForExtension"/> <!-- Seems like a good idea -->
 		<module name="MutableException"/>
 		<!-- don't do ThrowsCount - a lot of the exceptions will be standard Java ones that aren't necessarily under the same hiearchy (beyond java.lang.Exception) -->
 		<module name="InnerTypeLast"/> <!-- let's see if it makes code more readable -->
 		
 		<!-- Coding -->
-		<module name="ArrayTrailingComma"/>
 		<module name="CovariantEquals"/>
 		<module name="EmptyStatement"/>
 		<module name="EqualsAvoidNull"/> <!-- good idea/habit to get into -->
 		<module name="EqualsHashCode"/>
-		<module name="FinalLocalVariable">
-			<property name="tokens" value="VARIABLE_DEF,PARAMETER_DEF"/> <!-- defaults to just VARIABLE_DEF -->
-		</module>
 		<module name="HiddenField"> <!-- local variable w/ same name as class variable -->
 			<property name="ignoreSetter" value="true"/> <!-- I prefer using the name of the field as the parameter in the setter/ctor -->
 			<property name="ignoreConstructorParameter" value="true"/> <!-- i.e this.foo = foo -->
@@ -94,7 +98,6 @@
 		<module name="ParameterAssignment"/>
 		<module name="ExplicitInitialization"/>
 		<module name="DefaultComesLast"/>
-		<module name="MissingCtor"/>
 		<module name="FallThrough"/>
 		<module name="MultipleStringLiterals"/>
 		<module name="MultipleVariableDeclarations"/>
@@ -133,7 +136,6 @@
 		<module name="UncommentedMain"/>
 		<module name="UpperEll"/>
 		<module name="ArrayTypeStyle"/> <!-- I didn't know that the C-style array type was allowed in C either : ) -->
-		<module name="TrailingComment"/> <!-- likewise -->
 		<module name="OuterTypeFilename"/> <!-- Eclipse ought to catch this too -->
 		
 		<!-- Modifiers -->
@@ -154,7 +156,6 @@
 		<module name="ParenPad"/> <!-- Maven doesn't follow this one -->
 		<module name="TypecastParenPad"/>
 		<!-- I need to see if there is a FileTabCharacter equivalent for banning initial spaces -->
-		
 	</module>
 
 </module>
