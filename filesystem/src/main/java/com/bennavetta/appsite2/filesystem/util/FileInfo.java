@@ -68,6 +68,11 @@ public class FileInfo implements Externalizable
 		this.md5 = tmp;
 	}
 
+	/**
+	 * Empty constructor for deserialization. Can also be used to construct a {@code FileInfo} with
+	 * no fields set.
+	 */
+	public FileInfo() {} // NOPMD - need empty constructor
 
 	/**
 	 * Get the path that the file will eventually be located at.

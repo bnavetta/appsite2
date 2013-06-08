@@ -1,3 +1,18 @@
+/**
+ * Copyright 2013 Ben Navetta <ben.navetta@gmail.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.bennavetta.appsite2.test;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -15,7 +30,7 @@ import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
  * @author ben
  *
  */
-public class ServiceManager
+public final class ServiceManager
 {
 	/**
 	 * Map test objects (instances of Specification, etc.) to {@code ServiceMaanger}s.
@@ -26,7 +41,7 @@ public class ServiceManager
 	/**
 	 * The set of services associated with the managed test. 
 	 */
-	private Set<LocalServiceTestConfig> services = new HashSet<>();
+	private final Set<LocalServiceTestConfig> services = new HashSet<>();
 	
 	/**
 	 * The service helper for the managed test.
@@ -43,7 +58,7 @@ public class ServiceManager
 	 * @param test the test object
 	 * @return a {@code ServiceManager}. Never {@code null}
 	 */
-	public static final ServiceManager get(Object test)
+	public static ServiceManager get(final Object test)
 	{
 		if(!HELPERS.containsKey(test))
 		{
@@ -72,7 +87,7 @@ public class ServiceManager
 	 * has been created, new services cannot be added.
 	 * @param service the service configuration (cannot be {@code null})
 	 */
-	public void addService(LocalServiceTestConfig service)
+	public void addService(final LocalServiceTestConfig service)
 	{
 		checkState(helper == null, "The test helper has already been created");
 		services.add(checkNotNull(service));
@@ -83,7 +98,7 @@ public class ServiceManager
 	 * @param type the service class.
 	 * @return {@code true} if an instance of the given service class was found, {@code false} otherwise
 	 */
-	public boolean hasService(Class<? extends LocalServiceTestConfig> type)
+	public boolean hasService(final Class<? extends LocalServiceTestConfig> type)
 	{
 		for(LocalServiceTestConfig service : services)
 		{
