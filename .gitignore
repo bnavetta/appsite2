@@ -6,4 +6,4 @@ build/
 
 !buildSrc/src/**/*
 
-!lib/*
+local_db.bin
