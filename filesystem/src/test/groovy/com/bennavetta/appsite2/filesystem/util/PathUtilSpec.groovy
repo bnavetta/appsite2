@@ -105,4 +105,22 @@ class PathUtilSpec extends Specification
 			input << ['/tmp/scratch.tiff', '/tmp/scratch', '/tmp/', 'scratch///', "/"]
 			output << ['scratch.tiff', 'scratch', 'tmp', 'scratch', "/"]
 	}
+	
+	def "normailize rejects null"()
+	{
+		when:
+			PathUtils.normalize(null)
+		then:
+			def e = thrown(NullPointerException)
+			e.message == "Path must not be null"
+	}
+	
+	def "normalize behaves as expected"()
+	{
+		expect:
+			PathUtils.normalize(input) == output
+		where:
+			input << ['/foo/bar/baz', '/test.txt', 'myfile', '/foo/']
+			output << ['/foo/bar/baz', '/test.txt', '/myfile', '/foo']
+	}
 }

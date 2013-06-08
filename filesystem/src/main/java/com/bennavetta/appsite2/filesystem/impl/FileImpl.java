@@ -239,9 +239,7 @@ public class FileImpl implements File
 	@Override
 	public final byte[] getMD5Hash()
 	{
-		final byte[] out = new byte[md5Hash.length];
-		System.arraycopy(md5Hash, 0, out, 0, md5Hash.length);
-		return out;
+		return Arrays.copyOf(md5Hash, md5Hash.length);
 	}
 
 }

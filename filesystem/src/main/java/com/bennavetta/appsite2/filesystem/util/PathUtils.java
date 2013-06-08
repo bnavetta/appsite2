@@ -42,6 +42,11 @@ public class PathUtils
 	private static final String NULL_PATH_MSG = "Path must not be null";
 	
 	/**
+	 * The absolute root URI to resolve others against.
+	 */
+	private static final URI ROOT = URI.create(SEPARATOR);
+	
+	/**
 	 * An internal constructor to prevent instantiation.
 	 */
 	private PathUtils() {}
@@ -102,11 +107,17 @@ public class PathUtils
 	
 	/**
 	 * Normalize a path using the rules in {@link URI#normalize()}.
+	 * It will also resolve all paths against the root ({@code /}) and strip trailing slashes.
 	 * @param path the path to normalize
 	 * @return a normalized path
 	 */
 	public static final String normalize(final String path)
 	{
-		return URI.create(checkNotNull(path, NULL_PATH_MSG)).normalize().getPath();
+		String out = ROOT.resolve(checkNotNull(path, NULL_PATH_MSG)).normalize().getPath();
+		if(out.endsWith(SEPARATOR))
+		{
+			out = out.substring(0, out.length() - SEPARATOR.length());
+		}
+		return out;
 	}
 }
