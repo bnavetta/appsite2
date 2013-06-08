@@ -17,8 +17,30 @@ package com.bennavetta.appsite2.filesystem.impl
 
 import spock.lang.Specification
 
+import com.bennavetta.appsite2.test.Appengine
+import com.bennavetta.appsite2.test.Objectify
+import com.google.appengine.api.datastore.DatastoreService
+import com.google.appengine.api.datastore.DatastoreServiceFactory
+import com.google.appengine.api.datastore.KeyFactory
+
+@Mixin([Appengine, Objectify])
 class FileImplSpec extends Specification
 {
+	def setupSpec()
+	{
+		objectify(FileImpl.class)
+	}
+	
+	def setup()
+	{
+		appengineSetup()
+	}
+	
+	def cleanup()
+	{
+		appengineTearDown()
+	}
+	
 	def "hash is copied"()
 	{
 		given:
@@ -43,26 +65,62 @@ class FileImplSpec extends Specification
 	
 	def "constructor rejects null namespace"()
 	{
+		given:
+			def file
 		when:
-			new FileImpl("foo", null, null)
+			file = new FileImpl("foo", null, null)
 		then:
 			def e = thrown(NullPointerException)
 			e.message == "Namespace cannot be null"
+	}
+	
+	def "constructor adds parent"()
+	{
+		given:
+			def parent = new FileImpl("/foo", null, "myfs")
+			ofy().save().entity(parent).now()
+			def child
+		when:
+			child = new FileImpl("/foo/bar", parent, "myfs")
+		then:
+			child.getParent() == parent
+	}
+	
+	def "parent namespace must match child's"()
+	{
+		given:
+			def parent = new FileImpl("/foo", null, "myfs1")
+			ofy().save().entity(parent).now() // so ref works
+			def child = null
+		when:
+			child = new FileImpl("/foo/bar", parent, "myfs")
+		then:
+			thrown(IllegalArgumentException)
 	}
 	
 	def "setNamespace rejects null"()
 	{
 		when:
-			new FileImpl().namespace = null
+			new FileImpl().setNamespace(null)
 		then:
 			def e = thrown(NullPointerException)
 			e.message == "Namespace cannot be null"
 	}
 	
+	def "setNamespace works"()
+	{
+		given:
+			def file = new FileImpl()
+		when:
+			file.setNamespace("foo")
+		then:
+			file.getNamespace() == "foo"
+	}
+	
 	def "setPath rejects null path"()
 	{
 		when:
-			new FileImpl().path = null
+			new FileImpl().setPath(null)
 		then:
 			def e = thrown(NullPointerException)
 			e.message == "Path cannot be null"

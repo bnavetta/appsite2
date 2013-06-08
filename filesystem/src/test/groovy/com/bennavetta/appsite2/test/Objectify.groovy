@@ -20,4 +20,9 @@ class Objectify
 			ObjectifyService.register(clazz)
 		}
 	}
+	
+	com.googlecode.objectify.Objectify ofy()
+	{
+		return ObjectifyService.ofy()
+	}
 }
