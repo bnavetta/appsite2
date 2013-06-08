@@ -47,7 +47,7 @@ public class MediaTypeTranslatorFactory extends ValueTranslatorFactory<MediaType
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected ValueTranslator<MediaType, String> createSafe(Path path, Property property, Type type, CreateContext ctx)
+	protected ValueTranslator<MediaType, String> createSafe(final Path path, final Property property, final Type type, final CreateContext ctx)
 	{
 		return new MediaTypeTranslator(path);
 	}
@@ -63,7 +63,7 @@ public class MediaTypeTranslatorFactory extends ValueTranslatorFactory<MediaType
 		 * Create a new translator for the given path.
 		 * @param path the path of the property
 		 */
-		public MediaTypeTranslator(Path path)
+		public MediaTypeTranslator(final Path path)
 		{
 			super(path, String.class);
 		}
@@ -72,7 +72,7 @@ public class MediaTypeTranslatorFactory extends ValueTranslatorFactory<MediaType
 		 * {@inheritDoc}
 		 */
 		@Override
-		protected MediaType loadValue(String value, LoadContext ctx) throws SkipException
+		protected MediaType loadValue(final String value, final LoadContext ctx) throws SkipException
 		{
 			return MediaType.parse(value);
 		}
@@ -81,7 +81,7 @@ public class MediaTypeTranslatorFactory extends ValueTranslatorFactory<MediaType
 		 * {@inheritDoc}
 		 */
 		@Override
-		protected String saveValue(MediaType value, SaveContext ctx) throws SkipException
+		protected String saveValue(final MediaType value, final SaveContext ctx) throws SkipException
 		{
 			return value.toString();
 		}

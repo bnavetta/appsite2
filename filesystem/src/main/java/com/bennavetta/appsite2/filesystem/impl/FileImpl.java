@@ -16,6 +16,7 @@
 package com.bennavetta.appsite2.filesystem.impl;
 
 import static com.bennavetta.appsite2.filesystem.util.PathUtils.lastPathComponent;
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.Arrays;
@@ -37,17 +38,7 @@ import com.googlecode.objectify.condition.IfNotNull;
  */
 @Entity(name="file")
 public class FileImpl implements File
-{
-	/**
-	 * The error message for when a path argument is {@code null}. Its value is {@value}.
-	 */
-	private static final String NULL_PATH_MSG = "Path cannot be null";
-	
-	/**
-	 * The error message for when a namespace argument is {@code null}. Its value is {@value}.
-	 */
-	private static final String NULL_NAMESPACE_MSG = "Namespace cannot be null";
-	
+{	
 	/**
 	 * The path of the file.
 	 * @see File#getPath()
@@ -88,7 +79,7 @@ public class FileImpl implements File
 	/**
 	 * Empty constructor for Objectify.
 	 */
-	public FileImpl() {}
+	protected FileImpl() {} // NOPMD - Objectify needs a default constructor, and there's nothing to do here
 	
 	/**
 	 * Create a new {@code FileImpl} with the minimum information needed for a directory.
@@ -98,10 +89,17 @@ public class FileImpl implements File
 	 */
 	public FileImpl(final String path, final FileImpl parent, final String namespace)
 	{
-		this.path = checkNotNull(path, NULL_PATH_MSG);
+		//CHECKSTYLE.OFF: MultipleStringLiterals - declaring fields for error messages is silly
+		this.path = checkNotNull(path, "Path cannot be null");
+		this.namespace = checkNotNull(namespace, "Namespace cannot be null");
+		//CHECKSTYLE.ON: MultipleStringLiterals
+		
 		// parent will be null for root directory
-		this.parent = parent != null ? Ref.create(parent) : null;
-		this.namespace = checkNotNull(namespace, NULL_NAMESPACE_MSG);
+		if(parent != null)
+		{
+			checkArgument(parent.namespace.equals(namespace));
+			this.parent = Ref.create(parent);
+		}
 	}
 
 	/**
@@ -120,7 +118,9 @@ public class FileImpl implements File
 	 */
 	public final void setNamespace(final String namespace)
 	{
-		this.namespace = checkNotNull(namespace, NULL_NAMESPACE_MSG);
+		//CHECKSTYLE.OFF: MultipleStringLiterals - declaring fields for error messages is silly
+		this.namespace = checkNotNull(namespace, "Namespace cannot be null");
+		//CHECKSTYLE.ON: MultipleStringLiterals
 	}
 
 	/**
@@ -156,7 +156,9 @@ public class FileImpl implements File
 	 */
 	public final void setPath(final String path)
 	{
-		this.path = checkNotNull(path, NULL_PATH_MSG);
+		//CHECKSTYLE.OFF: MultipleStringLiterals - declaring fields for error messages is silly
+		this.path = checkNotNull(path, "Path cannot be null");
+		//CHECKSTYLE.ON: MultipleStringLiterals
 	}
 
 	/**
@@ -212,6 +214,7 @@ public class FileImpl implements File
 	 */
 	public final void setParent(final FileImpl parent)
 	{
+		checkArgument(parent.namespace.equals(this.namespace));
 		this.parent = Ref.create(parent);
 	}
 

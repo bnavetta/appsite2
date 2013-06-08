@@ -29,19 +29,19 @@ public class Block
 	/**
 	 * The weak checksum of the block.
 	 */
-	private long checksum;
+	private final long checksum;
 	
 	/**
 	 * The MD5 checksum of the block.
 	 */
-	private byte[] hash;
+	private final byte[] hash;
 	
 	/**
 	 * Create a new block with the given checksum and hash.
 	 * @param checksum the weak rolling checksum
 	 * @param hash the stronger MD5 hash (will be copied)
 	 */
-	public Block(long checksum, byte[] hash)
+	public Block(final long checksum, final byte[] hash)
 	{	
 		this.checksum = checksum;
 		this.hash = Arrays.copyOf(hash, hash.length);

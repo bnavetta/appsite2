@@ -25,40 +25,37 @@ import com.bennavetta.appsite2.sync.DifferenceListener;
  * @author ben
  *
  */
-public class DifferenceReader
+public final class DifferenceReader
 {
 	/**
-	 * Create a new {@code DifferenceReader}.
+	 * Hidden constructor.
 	 */
-	public DifferenceReader()
-	{
-		// nothing to do
-	}
+	private DifferenceReader() {}
 	
 	/**
 	 * Read the encoded differences from a stream.
-	 * @param in the stream to read from
+	 * @param input the stream to read from
 	 * @param listener a handler for the read differences
 	 * @throws IOException if there is an exception reading the differences
 	 */
-	public void readDifferences(DataInputStream in, DifferenceListener listener) throws IOException
+	public static void readDifferences(final DataInputStream input, final DifferenceListener listener) throws IOException
 	{
 		listener.onStart();
 		
 		byte type = -1;
 		MAIN: while(true)
 		{
-			type = in.readByte();
+			type = input.readByte();
 			switch(type)
 			{
 			case Constants.TYPE_FINISHED:
 				break MAIN;
 			case Constants.TYPE_BLOCK_MATCH:
-				listener.onMatch(in.readInt());
+				listener.onMatch(input.readInt());
 				break;
 			case Constants.TYPE_NEW_DATA:
-				byte[] data = new byte[in.readInt()];
-				in.readFully(data);
+				byte[] data = new byte[input.readInt()]; // NOPMD - general opinion seems to be that pooling isn't worth it / more expensive
+				input.readFully(data);
 				listener.onDifferent(data, 0, data.length);
 				break;
 			default:

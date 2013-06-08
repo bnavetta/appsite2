@@ -50,22 +50,18 @@ import com.googlecode.objectify.VoidWork;
  * @author ben
  *
  */
+@SuppressWarnings({"PMD.TooManyStaticImports", "PMD.TooManyMethods"})
 public class FileSystemImpl implements FileSystem
 {
 	/**
 	 * The maximum size of the directory listing cache.
 	 */
-	private static final long MAX_CACHE_SIZE = 1000;
+	private static final long MAX_CACHE_SIZE = 1000; // NOPMD - can't really get much shorter
 	
 	/**
 	 * The time to wait after an object in the directory listing cache is last accessed before marking it as expired.
 	 */
-	private static final long CACHE_EXPIRATION_MINS = 2;
-	
-	/**
-	 * The error message for when a non-{@link FileImpl} file is passed to a method requiring a {@code FileImpl} object.
-	 */
-	private static final String UNSUPPORTED_FILE_CLASS_MSG = "Unsupported File implementation: %s";
+	private static final long CACHE_EXPIRATION_MINS = 2; // NOPMD - can't really get much shorter
 	
 	static
 	{
@@ -114,7 +110,9 @@ public class FileSystemImpl implements FileSystem
 	@Override
 	public final ImmutableList<? extends File> listFiles(final File directory) throws FileSystemException
 	{
-		checkArgument(directory instanceof FileImpl, UNSUPPORTED_FILE_CLASS_MSG, directory);
+		//CHECKSTYLE.OFF: MultipleStringLiterals - declaring fields for error messages is silly
+		checkArgument(directory instanceof FileImpl, "Unsupported File implementation: %s", directory);
+		//CHECKSTYLE.ON: MultipleStringLiterals
 		try
 		{
 			return ImmutableList.copyOf(ofy().load().keys(listingCache.get((FileImpl) directory)).values());
@@ -128,9 +126,11 @@ public class FileSystemImpl implements FileSystem
 	}
 	
 	@Override
-	public final ImmutableList<String> list(File directory) throws FileSystemException
+	public final ImmutableList<String> list(final File directory) throws FileSystemException
 	{
-		checkArgument(directory instanceof FileImpl, UNSUPPORTED_FILE_CLASS_MSG, directory);
+		//CHECKSTYLE.OFF: MultipleStringLiterals - declaring fields for error messages is silly
+		checkArgument(directory instanceof FileImpl, "Unsupported File implementation: %s", directory);
+		//CHECKSTYLE.ON: MultipleStringLiterals
 		try
 		{
 			return new ImmutableList.Builder<String>().addAll(FluentIterable.from(
@@ -154,15 +154,15 @@ public class FileSystemImpl implements FileSystem
 	}
 	
 	@Override
-	public final ImmutableList<? extends File> filesAt(String... paths)
+	public final ImmutableList<? extends File> filesAt(final String... paths)
 	{
 		return filesAt(Arrays.asList(paths));
 	}
 
 	@Override
-	public final ImmutableList<? extends File> filesAt(Iterable<String> paths)
+	public final ImmutableList<? extends File> filesAt(final Iterable<String> paths)
 	{
-		Iterable<String> normalized = FluentIterable.from(paths).transform(new Normalizer());
+		final Iterable<String> normalized = FluentIterable.from(paths).transform(new Normalizer());
 		return ImmutableList.copyOf(ofy().load().type(FileImpl.class).ids(normalized).values());
 	}
 
@@ -182,7 +182,9 @@ public class FileSystemImpl implements FileSystem
 	@Override
 	public final void delete(final File file, final boolean recurse) throws FileSystemException
 	{
-		checkArgument(file instanceof FileImpl, UNSUPPORTED_FILE_CLASS_MSG, file);
+		//CHECKSTYLE.OFF: MultipleStringLiterals - declaring fields for error messages is silly
+		checkArgument(file instanceof FileImpl, "Unsupported File implementation: %s", file);
+		//CHECKSTYLE.ON: MultipleStringLiterals
 		if(recurse)
 		{
 			final Set<FileImpl> filesToDelete = listRecurse((FileImpl) file);
@@ -210,9 +212,9 @@ public class FileSystemImpl implements FileSystem
 	 * @throws FileSystemException if there is an error listing the files
 	 * @return the list of files located under the given directory
 	 */
-	private final Set<FileImpl> listRecurse(FileImpl file) throws FileSystemException
+	private final Set<FileImpl> listRecurse(final FileImpl file) throws FileSystemException
 	{
-		Set<FileImpl> files = new HashSet<>();
+		final Set<FileImpl> files = new HashSet<>();
 		files.add(file);
 		if(file.isDirectory())
 		{
@@ -230,9 +232,9 @@ public class FileSystemImpl implements FileSystem
 	@Override
 	public final File create(final String path, final MediaType mimeType, final BlobKey blobKey, final byte[] md5) throws FileSystemException
 	{
-		String normalized = normalize(checkNotNull(path, "Path of file cannot be null"));
-		FileImpl parent = directory(withoutLastComponent(normalized));
-		FileImpl file = new FileImpl(normalized, parent, name);
+		final String normalized = normalize(checkNotNull(path, "Path of file cannot be null"));
+		final FileImpl parent = directory(withoutLastComponent(normalized));
+		final FileImpl file = new FileImpl(normalized, parent, name);
 		file.setMimeType(checkNotNull(mimeType, "MIME type cannot be null"));
 		file.setBlobKey(checkNotNull(blobKey, "Blob key cannot be null"));
 		file.setMD5Hash(checkNotNull(md5, "MD5 hash cannot be null"));
@@ -246,19 +248,19 @@ public class FileSystemImpl implements FileSystem
 	 * @return the loaded (possibly created) directory
 	 * @throws IllegalStateException if the directory exists but is not a directory
 	 */
-	private FileImpl directory(String path) throws IllegalStateException
+	private FileImpl directory(final String path) throws IllegalStateException
 	{
 		FileImpl dir = (FileImpl) fileAt(path);
-		if(dir != null)
+		if(dir == null)
 		{
-			checkState(dir.isDirectory(), "File %s is not a directory", dir.getPath());
+			final FileImpl parent = directory(withoutLastComponent(path));
+			dir = new FileImpl(path, parent, name);
+			ofy().save().entity(dir);
 			return dir;
 		}
 		else
 		{
-			FileImpl parent = directory(withoutLastComponent(path));
-			dir = new FileImpl(path, parent, name);
-			ofy().save().entity(dir);
+			checkState(dir.isDirectory(), "File %s is not a directory", dir.getPath());
 			return dir;
 		}
 	}
@@ -282,7 +284,7 @@ public class FileSystemImpl implements FileSystem
 		 * {@inheritDoc}
 		 */
 		@Override
-		public String apply(String input)
+		public String apply(final String input)
 		{
 			return normalize(input);
 		}	
@@ -300,7 +302,7 @@ public class FileSystemImpl implements FileSystem
 		 * {@inheritDoc}
 		 */
 		@Override
-		public ImmutableList<Key<FileImpl>> load(File key) throws Exception
+		public ImmutableList<Key<FileImpl>> load(final File key)
 		{
 			return ImmutableList.copyOf(ofy().load().type(FileImpl.class).filter("parent =", key).keys());
 		}
@@ -317,7 +319,7 @@ public class FileSystemImpl implements FileSystem
 		 * {@inheritDoc}
 		 */
 		@Override
-		public String apply(Key<FileImpl> input)
+		public String apply(final Key<FileImpl> input)
 		{
 			return input.getString();
 		}	

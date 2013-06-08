@@ -30,6 +30,8 @@ import com.google.common.io.BaseEncoding;
  * @author ben
  *
  */
+
+@SuppressWarnings("PMD") // this will end up being broken into unit tests soon
 public class RsyncTest
 {
 	/**

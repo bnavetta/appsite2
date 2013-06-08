@@ -39,9 +39,6 @@ subprojects {
 	
 	repositories {
 		mavenCentral()
-		flatDir {
-			dirs rootProject.file('lib')
-		}
 	}
 	
 	check.dependsOn jacocoTestReport
@@ -53,12 +50,45 @@ subprojects {
 		additionalSourceDirs = files(sourceSets.main.allJava.srcDirs)
 	}
 	
+	findbugs {
+		effort = "max"
+		reportLevel = "high"
+		excludeFilter = rootProject.file("config/findbugs-exclude.xml")
+	}
+	
+	pmd {
+		//toolVersion = "5.0.4" // the gradle task seems to call pmd 5 incorrectly
+		ruleSets = [
+			"basic",
+			"braces",
+			"codesize",
+			"coupling",
+			"design",
+			"imports",
+			"j2ee",
+			"naming",
+			"optimizations",
+			"sunsecure",
+			"strictexception",
+			"strings",
+			"typeresolution",
+			"unusedcode",
+		]
+	}
+	
+	task checkstyleReport(dependsOn: checkstyleMain) << {
+		def source = "$buildDir/reports/checkstyle/main.xml"
+		def style = rootProject.file("config/checkstyle/checkstyle-frames.xsl")
+		def dest = "$buildDir/reports/checkstyle/main.html"
+		ant.xslt(in: source, style: style, out: dest) {
+			param(name: "project.name", expression: project.name)
+		}
+	}
+	
 	dependencies {
-		compile "org.codehaus.groovy:groovy-all:$groovyVersion"
 		compile "com.google.guava:guava:$guavaVersion"
 		testCompile "org.spockframework:spock-core:$spockVersion"
-		
-		
+		testCompile "org.codehaus.groovy:groovy-all:$groovyVersion"
 	}
 	
 	license {

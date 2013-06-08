@@ -28,7 +28,7 @@ import com.google.appengine.repackaged.com.google.common.collect.Iterables;
  * @author ben
  *
  */
-public class PathUtils
+public final class PathUtils
 {
 	/**
 	 * The path separator character used by file system paths.
@@ -56,7 +56,7 @@ public class PathUtils
 	 * @param path the path string (cannot be {@code null})
 	 * @return the path, ending with a slash
 	 */
-	public static final String directoryPath(final String path)
+	public static String directoryPath(final String path)
 	{
 		checkNotNull(path, NULL_PATH_MSG);
 		return path.endsWith(SEPARATOR) ? path : path.concat(SEPARATOR);
@@ -67,7 +67,7 @@ public class PathUtils
 	 * @param path the path string (cannot be {@code null})
 	 * @return the last component in the path
 	 */
-	public static final String lastPathComponent(final String path)
+	public static String lastPathComponent(final String path)
 	{
 		String outPath = checkNotNull(path, NULL_PATH_MSG).replaceAll(Pattern.quote(SEPARATOR) + "+", SEPARATOR);
 		if(SEPARATOR.equals(outPath))
@@ -86,7 +86,7 @@ public class PathUtils
 	 * @param path the path string (cannot be {@code null})
 	 * @return the path minus its last component
 	 */
-	public static final String withoutLastComponent(final String path)
+	public static String withoutLastComponent(final String path)
 	{
 		checkNotNull(path, NULL_PATH_MSG);
 		if(path.equals(SEPARATOR))
@@ -111,7 +111,7 @@ public class PathUtils
 	 * @param path the path to normalize
 	 * @return a normalized path
 	 */
-	public static final String normalize(final String path)
+	public static String normalize(final String path)
 	{
 		String out = ROOT.resolve(checkNotNull(path, NULL_PATH_MSG)).normalize().getPath();
 		if(out.endsWith(SEPARATOR))

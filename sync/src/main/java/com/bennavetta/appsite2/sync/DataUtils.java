@@ -22,7 +22,7 @@ import java.util.Random;
  * @author ben
  *
  */
-public class DataUtils
+public final class DataUtils
 {
 	/**
 	 * The size of the data buffer to use.
@@ -40,11 +40,11 @@ public class DataUtils
 	 * @return a {@code byte[]} of the given length filled with random bytes
 	 * @see Random#nextBytes(byte[])
 	 */
-	public static byte[] randomData(int length)
+	public static byte[] randomData(final int length)
 	{
-		Random rand = new Random();
-		byte[] buf = new byte[BUF_SIZE];
-		byte[] out = new byte[length];
+		final Random rand = new Random();
+		final byte[] buf = new byte[BUF_SIZE];
+		final byte[] out = new byte[length];
 		
 		for(int i = 0; i < out.length; i += buf.length)
 		{
@@ -61,9 +61,9 @@ public class DataUtils
 	 * @param length the length of the buffer to generate
 	 * @return the generated data
 	 */
-	public static byte[] sequentialData(int length)
+	public static byte[] sequentialData(final int length)
 	{
-		byte[] out = new byte[length];
+		final byte[] out = new byte[length];
 		for(int i = 0; i < length; i++)
 		{
 			out[i] = (byte) i;

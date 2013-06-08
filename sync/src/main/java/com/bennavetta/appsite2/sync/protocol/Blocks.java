@@ -18,6 +18,7 @@ package com.bennavetta.appsite2.sync.protocol;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
 import com.bennavetta.appsite2.sync.Block;
 import com.carrotsearch.hppc.ObjectArrayList;
@@ -28,7 +29,7 @@ import com.carrotsearch.hppc.ObjectArrayList;
  * @author ben
  *
  */
-public class Blocks
+public final class Blocks
 {	
 	/**
 	 * Hidden constructor.
@@ -37,21 +38,22 @@ public class Blocks
 	
 	/**
 	 * Read blocks from the given stream.
-	 * @param in the stream to read blocks from
+	 * @param input the stream to read blocks from
 	 * @return the blocks read
 	 * @throws IOException if there is an exception reading the blocks
 	 * @see #writeBlocks(ObjectArrayList, DataOutputStream)
 	 */
-	public static ObjectArrayList<Block> readBlocks(DataInputStream in) throws IOException
+	public static ObjectArrayList<Block> readBlocks(final DataInputStream input) throws IOException
 	{
-		int numberOfBlocks = in.readInt();
-		ObjectArrayList<Block> blocks = new ObjectArrayList<Block>(numberOfBlocks);
+		final byte[] hash = new byte[Constants.HASH_LENGTH]; // hash alwas same size, Block makes a copy anyways
+		final int numberOfBlocks = input.readInt();
+		final ObjectArrayList<Block> blocks = new ObjectArrayList<Block>(numberOfBlocks);
 		for(int i = 0; i < numberOfBlocks; i++)
 		{
-			long checksum = in.readLong();
-			byte[] hash = new byte[Constants.HASH_LENGTH]; // the hash is always the same size
-			in.readFully(hash);
-			blocks.add(new Block(checksum, hash));
+			final long checksum = input.readLong();
+			input.readFully(hash);
+			blocks.add(new Block(checksum, hash)); // NOPMD - the point of this method is to loop through and create Block objects
+			Arrays.fill(hash, (byte) 0); // make sure the hash isn't corrupted
 		}
 		return blocks;
 	}
@@ -63,15 +65,15 @@ public class Blocks
 	 * @throws IOException if there is an exception writing the blocks
 	 * @see {@link #readBlocks(DataInputStream)}
 	 */
-	public static void writeBlocks(ObjectArrayList<Block> blocks, DataOutputStream out) throws IOException
+	public static void writeBlocks(final ObjectArrayList<Block> blocks, final DataOutputStream out) throws IOException
 	{
 		final int size = blocks.size();
 		out.writeInt(size);
-		// see javadoc for why the casts are necessary
+		// see ObjectArrayList javadoc and the HPPC user guide for why the casts are necessary
 		final Object[] buffer = (Object[]) blocks.buffer;
 		for(int i = 0; i < size; i++)
 		{
-			Block block = (Block) buffer[i];
+			final Block block = (Block) buffer[i];
 			out.writeLong(block.getChecksum());
 			out.write(block.getHash()); // since it's a hash, the size is constant
 		}

@@ -26,24 +26,24 @@ public class NullDifferenceListener implements DifferenceListener
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onMatch(int block) {}
+	public void onMatch(int block) {} // NOPMD
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onDifferent(byte[] data, int off, int len) {}
+	public void onDifferent(byte[] data, int off, int len) {} // NOPMD
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onStart() {}
+	public void onStart() {} // NOPMD
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onFinish() {}
+	public void onFinish() {} // NOPMD
 
 }

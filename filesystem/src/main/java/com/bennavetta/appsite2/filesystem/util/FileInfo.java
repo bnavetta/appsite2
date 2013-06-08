@@ -52,11 +52,6 @@ public class FileInfo implements Externalizable
 	private byte[] md5;
 	
 	/**
-	 * Create a new {@code FileInfo} with all fields set to {@code null}.
-	 */
-	public FileInfo() {}
-	
-	/**
 	 * Create a new {@code FileInfo} with all fields set to the given values.
 	 * @param path the path
 	 * @param mimeType the MIME type
@@ -173,36 +168,36 @@ public class FileInfo implements Externalizable
 	@Override
 	public final void writeExternal(final ObjectOutput out) throws IOException
 	{
-		if(path != null)
+		if(path == null)
+		{
+			out.writeBoolean(false);
+		}
+		else
 		{
 			out.writeBoolean(true);
 			out.writeUTF(path);
 		}
-		else
+		
+		if(mimeType == null)
 		{
 			out.writeBoolean(false);
 		}
-		
-		if(mimeType != null)
+		else
 		{
 			out.writeBoolean(true);
 			out.writeUTF(mimeType.toString());
 		}
-		else
-		{
-			out.writeBoolean(false);
-		}
 		
 		out.writeObject(blobKey);
 		
-		if(md5 != null)
+		if(md5 == null)
 		{
-			out.writeInt(md5.length);
-			out.write(md5);
+			out.writeInt(0);
 		}
 		else
 		{
-			out.writeInt(0);
+			out.writeInt(md5.length);
+			out.write(md5);
 		}
 	}
 
@@ -210,7 +205,7 @@ public class FileInfo implements Externalizable
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final void readExternal(final ObjectInput in) throws IOException, ClassNotFoundException
+	public final void readExternal(final ObjectInput in) throws IOException, ClassNotFoundException // NOPMD - keeping parameter name from API
 	{
 		if(in.readBoolean())
 		{

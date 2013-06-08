@@ -36,7 +36,7 @@ public class DifferenceWriter implements DifferenceListener
 	 * Create a new {@code DifferenceWriter} that will write differences to the given stream.
 	 * @param out the stream to write to
 	 */
-	public DifferenceWriter(DataOutputStream out)
+	public DifferenceWriter(final DataOutputStream out)
 	{
 		this.out = out;
 	}
@@ -45,7 +45,7 @@ public class DifferenceWriter implements DifferenceListener
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onMatch(int block) throws IOException
+	public void onMatch(final int block) throws IOException
 	{
 		out.write(Constants.TYPE_BLOCK_MATCH);
 		out.writeInt(block);
@@ -55,7 +55,7 @@ public class DifferenceWriter implements DifferenceListener
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onDifferent(byte[] data, int off, int len) throws IOException
+	public void onDifferent(final byte[] data, final int off, final int len) throws IOException
 	{
 		out.write(Constants.TYPE_NEW_DATA);
 		out.writeInt(len);

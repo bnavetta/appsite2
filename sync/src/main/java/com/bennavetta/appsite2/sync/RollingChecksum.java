@@ -21,7 +21,7 @@ package com.bennavetta.appsite2.sync;
  * @author ben
  *
  */
-public class RollingChecksum
+public final class RollingChecksum
 {	
 	/**
 	 * The hidden constructor - this class should not be instantiated.
@@ -35,10 +35,10 @@ public class RollingChecksum
 	 * @param len the length of data to use when calculating the checksum (the block size)
 	 * @return the checksum as a {@code long}
 	 */
-	public static long checksum(byte[] data, int off, int len)
+	public static long checksum(final byte[] data, final int off, final int len)
 	{
-		int a = 0;
-		int b = 0;
+		int a = 0; // NOPMD - using variable names from algorithm
+		int b = 0; // NOPMD - using variable names from algorithm
 		for(int i = off; i < off + len; i++)
 		{
 			a += data[i];
@@ -56,10 +56,10 @@ public class RollingChecksum
 	 * @param length the block size used when calculating the checksum
 	 * @return the updated checksum as a {@code long}
 	 */
-	public static long update(long checksum, byte prev, byte added, int length)
+	public static long update(final long checksum, final byte prev, final byte added, final int length)
 	{
-		int a = getA(checksum);
-		int b = getB(checksum);
+		int a = getA(checksum); // NOPMD - using variable names from algorithm
+		int b = getB(checksum); // NOPMD - using variable names from algorithm
 		
 		a -= prev - added;
 		b -= prev *  length - a;
@@ -74,7 +74,7 @@ public class RollingChecksum
 	 * @see #getA(long)
 	 * @see #getB(long)
 	 */
-	private static long combine(int a, int b)
+	private static long combine(final int a, final int b) // NOPMD - using variable names from algorithm
 	{
 		//CHECKSTYLE.OFF: MagicNumber - Clearer to have the bit shift constants here
 		return (long)a << 32 | b & 0xFFFFFFFFL;
@@ -88,7 +88,7 @@ public class RollingChecksum
 	 * @see #combine(int, int)
 	 * @see #getB(long)
 	 */
-	private static int getA(long c)
+	private static int getA(final long c) // NOPMD - using variable names from algorithm
 	{
 		//CHECKSTYLE.OFF: MagicNumber - More readable than (int)(c >> FIRST_BIT_SHIFT) or something
 		return (int)(c >> 32);
@@ -102,7 +102,7 @@ public class RollingChecksum
 	 * @see #combine(int, int)
 	 * @see #getA(long)
 	 */
-	private static int getB(long c)
+	private static int getB(final long c) // NOPMD - using variable names from algorithm
 	{
 		return (int)c;
 	}

@@ -36,7 +36,7 @@ import com.google.common.io.ByteStreams;
  * @author ben
  *
  */
-public class Rsync
+public final class Rsync
 {
 	/**
 	 * Hidden constructor.
@@ -46,26 +46,22 @@ public class Rsync
 	/**
 	 * Generate the list of blocks in the receiver's file that will be sent to the sender to run
 	 * the algorithm.
-	 * @param in a stream to read blocks from
+	 * @param input a stream to read blocks from
 	 * @param blockSize the block size to use. Must be the same on the client and server
 	 * @return a list containing the generated blocks
 	 * @throws IOException if there is an exception reading the data
 	 */
-	public static final ObjectArrayList<Block> calculateBlocks(InputStream in, int blockSize) throws IOException
+	public static ObjectArrayList<Block> calculateBlocks(final InputStream input, final int blockSize) throws IOException
 	{
-		ObjectArrayList<Block> blocks = new ObjectArrayList<Block>();
-		byte[] buf = new byte[blockSize];
-		int i = 0;
-		while(in.read(buf, 0, blockSize) != -1)
+		final ObjectArrayList<Block> blocks = new ObjectArrayList<Block>();
+		final byte[] buf = new byte[blockSize];
+		while(input.read(buf, 0, blockSize) != -1)
 		{
-			blocks.add(new Block(
+			blocks.add(new Block(// NOPMD - point of method is to create Block objects in a loop
 				RollingChecksum.checksum(buf, 0, blockSize),
 				Hashing.md5().hashBytes(buf).asBytes()
 			));
-			i++;
-			//System.out.println(blocks.get(blocks.size() - 1));
 		}
-		System.out.println("Calculated " + i + " blocks");
 		return blocks;
 	}
 	
@@ -74,23 +70,23 @@ public class Rsync
 	 * between the two.
 	 * @param oldBlocks the blocks from the old file
 	 * @param chunkSize the chunk size used to generate the blocks
-	 * @param in the new file
+	 * @param input the new file
 	 * @param listener an event handler that will receive the calculated differences
 	 * @throws IOException if there is an exception calculating differences
 	 */
-	public static final void calculateDifferences(ObjectArrayList<Block> oldBlocks, int chunkSize, InputStream in, DifferenceListener listener) throws IOException
+	public static void calculateDifferences(final ObjectArrayList<Block> oldBlocks, final int chunkSize, final InputStream input, final DifferenceListener listener) throws IOException
 	{	
-		ByteArrayDeque buf = new ByteArrayDeque(chunkSize);
-		ByteArrayList newData = new ByteArrayList(chunkSize); // build up new data
-		byte[] matchBuf = new byte[chunkSize]; //the buffer to pass into findMatch, etc.
-		byte[] single = new byte[1];
+		final ByteArrayDeque buf = new ByteArrayDeque(chunkSize);
+		final ByteArrayList newData = new ByteArrayList(chunkSize); // build up new data
+		final byte[] matchBuf = new byte[chunkSize]; //the buffer to pass into findMatch, etc.
+		final byte[] single = new byte[1];
 		
 		boolean inMatch = false;
 		int matchRemaining = 0;
 		
 		listener.onStart();
 		
-		ByteStreams.readFully(in, matchBuf, 0, chunkSize); // if we read directly into the ByteArrayDeque, it doesn't know that data was added
+		ByteStreams.readFully(input, matchBuf, 0, chunkSize); // if we read directly into the ByteArrayDeque, it doesn't know that data was added
 		buf.addLast(matchBuf);
 		long checksum = RollingChecksum.checksum(buf.buffer, buf.head, chunkSize);
 		int match = findMatch(oldBlocks, checksum, matchBuf); //only this time, for performance
@@ -103,8 +99,8 @@ public class Rsync
 		
 		while(true)
 		{
-			byte old = buf.removeFirst();
-			int read = in.read(single);
+			final byte old = buf.removeFirst();
+			final int read = input.read(single);
 			if(read == -1)
 			{
 				break;
@@ -123,7 +119,12 @@ public class Rsync
 			if(!inMatch) // separate test because we could have just left being in a match
 			{
 				match = findMatch(oldBlocks, checksum, buf.toArray(matchBuf)); //TODO: figure out how to pass the buffer without copying
-				if(match != -1)
+				if(match == -1)
+				{
+					newData.add(buf.getLast());
+					//System.out.println("No match at " + i);
+				}
+				else
 				{
 					if(newData.size() > 0)
 					{
@@ -139,11 +140,6 @@ public class Rsync
 					inMatch = true;
 					matchRemaining = chunkSize-1; // already one byte into match
 				}
-				else
-				{
-					newData.add(buf.getLast());
-					//System.out.println("No match at " + i);
-				}
 			}
 		}
 		listener.onFinish();
@@ -156,7 +152,7 @@ public class Rsync
 	 * @param data the data being searched for (in case a hash needs to be generated)
 	 * @return the index of the matching block, or {@code -1}
 	 */
-	private static int findMatch(ObjectArrayList<Block> blocks, final long checksum, final byte[] data)
+	private static int findMatch(final ObjectArrayList<Block> blocks, final long checksum, final byte[] data)
 	{
 		//CHECKSTYLE.OFF: VisibilityModifier - using getters for the anonymous class is kind of pointless
 		// use a predicate so we can stop iterating once a match is found
@@ -165,7 +161,7 @@ public class Rsync
 			int index;
 			byte[] dataHash;
 			@Override
-			public boolean apply(Block value)
+			public boolean apply(final Block value)
 			{
 				if(value.getChecksum() == checksum)
 				{
@@ -194,6 +190,7 @@ public class Rsync
 	 * @param args ignored
 	 * @throws IOException if something goes wrong
 	 */
+	@SuppressWarnings("PMD") // this will end up in unit tests soon
 	public static void main(String[] args) throws IOException
 	{
 		/*
