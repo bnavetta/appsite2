@@ -1,0 +1,4 @@
+dependencies {
+	compile "com.google.guava:guava:$guavaVersion"
+	compile "com.carrotsearch:hppc:0.5.0"
+}
