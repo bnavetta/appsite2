@@ -23,6 +23,7 @@ import java.util.Arrays;
 
 import com.bennavetta.appsite2.filesystem.File;
 import com.bennavetta.appsite2.filesystem.FileSystem;
+import com.bennavetta.appsite2.filesystem.FileSystemManager;
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.common.net.MediaType;
 import com.googlecode.objectify.Ref;
@@ -194,8 +195,7 @@ public class FileImpl implements File
 	@Override
 	public final FileSystem getFileSystem()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return FileSystemManager.get(namespace);
 	}
 
 	/**

@@ -17,11 +17,9 @@ package com.bennavetta.appsite2.filesystem.impl
 
 import spock.lang.Specification
 
+import com.bennavetta.appsite2.filesystem.FileSystemManager
 import com.bennavetta.appsite2.test.Appengine
 import com.bennavetta.appsite2.test.Objectify
-import com.google.appengine.api.datastore.DatastoreService
-import com.google.appengine.api.datastore.DatastoreServiceFactory
-import com.google.appengine.api.datastore.KeyFactory
 
 @Mixin([Appengine, Objectify])
 class FileImplSpec extends Specification
@@ -124,5 +122,16 @@ class FileImplSpec extends Specification
 		then:
 			def e = thrown(NullPointerException)
 			e.message == "Path cannot be null"
+	}
+	
+	def "getFileSystem works"()
+	{
+		given:
+			FileImpl file = new FileImpl("/foo", null, "myfs")
+		when:
+			FileSystemManager.get("myfs")
+		then:
+			file.fileSystem != null
+			file.fileSystem.name == "myfs"
 	}
 }
